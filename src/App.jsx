@@ -21,6 +21,14 @@ const GROCERY_CATS = ["Dairy & Milk","Cheese","Yogurt & Breakfast","Deli Meats",
 const VI_DESIGN_CATS = ["Palette & Materials","Living Spaces","Kitchen & Scullery","Primary Suite & Bath","Outdoor & Deck","Lighting","Textiles & Soft Furnishings","Furniture","Art & Objects","Contractors & Vendors"];
 const RV_DESIGN_CATS = ["Palette & Materials","Living & Fireplace","Kitchen","Primary Suite","Ski Storage & Mudroom","Lighting & Hardware","Textiles & Rugs","Furniture","Art & Objects","Contractors & Vendors"];
 const DESIGN_STATUSES = ["Inspiration","Shortlisted","Purchased","Rejected"];
+const VI_STYLES = ["Coastal Contemporary","Pacific NW Organic","Quiet Luxury","Japandi Coastal","Modern Rustic"];
+const RV_STYLES = ["Alpine Modern","Scandinavian Lodge","Dark Mountain Moody","Rustic Refined","Japandi Mountain"];
+const STYLE_COLORS = {
+  "Coastal Contemporary":"#4a7c9c","Pacific NW Organic":"#4a7c4a","Quiet Luxury":"#9c8a5a",
+  "Japandi Coastal":"#5a7a8a","Modern Rustic":"#8a5a3a",
+  "Alpine Modern":"#5a7aac","Scandinavian Lodge":"#7a8a6a","Dark Mountain Moody":"#4a3a5a",
+  "Rustic Refined":"#7a5a3a","Japandi Mountain":"#5a6a7a"
+};
 const DESIGN_ROOMS_VI = ["Living Room","Kitchen","Primary Suite","Primary Bath","Office","Outdoor","Guest Room","Entry","Other"];
 const DESIGN_ROOMS_RV = ["Living Room","Kitchen","Primary Suite","Primary Bath","Ski Room","Deck","Guest Room","Other"];
 
@@ -145,7 +153,137 @@ const RV_SEED = [
   { text:"Rooftop access or shared view terrace", category:"Nice to Have", priority:"Nice to Have", source:"Existing", status:"Under Discussion", notes:"" },
 ];
 
-const GROCERY_SEED = [
+const VI_DESIGN_SEED = [
+  // PALETTE & MATERIALS
+  { name:"Limewash walls — warm white/cream", category:"Palette & Materials", room:"Living Room", style:"Coastal Contemporary", brand:"Portola Paints (Classico Limewash), Romabio, LIFF", price:"$8-15/sqft installed", status:"Inspiration", notes:"Tone shifts with light — the defining 2026 coastal luxury wall finish. Portola is the benchmark brand." },
+  { name:"White oak wide-plank flooring", category:"Palette & Materials", room:"Living Room", style:"Pacific NW Organic", brand:"Duchateau, Reward Hardwood, Boen", price:"$12-22/sqft installed", status:"Inspiration", notes:"Wire-brushed or UV-oiled finish. Warm honey tones over bleached. Duchateau Chateau Collection is top spec." },
+  { name:"Leathered quartzite countertops", category:"Palette & Materials", room:"Kitchen", style:"Quiet Luxury", brand:"Arizona Tile, MSI Surfaces, Dal-Tile", price:"$80-140/sqft installed", status:"Inspiration", notes:"Taj Mahal or Calacatta quartzite leathered. Matte finish, tactile warmth. Hides fingerprints." },
+  { name:"Honed Calacatta marble island", category:"Palette & Materials", room:"Kitchen", style:"Coastal Contemporary", brand:"Walker Zanger, Ann Sacks, Stone Source", price:"$120-200/sqft installed", status:"Inspiration", notes:"Waterfall edge, honed not polished. Walker Zanger Calacatta Monet is benchmark." },
+  { name:"Natural linen drapery — sheer to room-darkening", category:"Palette & Materials", room:"Primary Suite", style:"Quiet Luxury", brand:"Restoration Hardware, Pottery Barn, The Shade Store", price:"$300-800/panel", status:"Inspiration", notes:"Floor-to-ceiling, soft natural linen. The Shade Store allows custom sizing and motorization easily." },
+  { name:"Warm earthy palette — mushroom, taupe, soft clay", category:"Palette & Materials", room:"Other", style:"Quiet Luxury", brand:"Farrow & Ball, Benjamin Moore, Little Greene", price:"$100-200/gallon", status:"Inspiration", notes:"F&B Elephant Breath, Dead Salmon, Jitney. Benjamin Moore HC series for value. Defining 2026 coastal palette." },
+  { name:"Brushed unlacquered brass hardware", category:"Palette & Materials", room:"Kitchen", style:"Coastal Contemporary", brand:"Waterworks, Rohl, Newport Brass", price:"$200-800/fixture", status:"Inspiration", notes:"Unlacquered ages naturally — patinas to warmth. Waterworks is top spec. Newport Brass for value." },
+  { name:"Natural travertine tile — unfilled honed", category:"Palette & Materials", room:"Primary Bath", style:"Japandi Coastal", brand:"Walker Zanger, Ann Sacks, Cle Tile", price:"$20-50/sqft", status:"Inspiration", notes:"Unfilled honed travertine is the 2026 bathroom floor. Cle Tile has exceptional coastal-tone selection." },
+
+  // LIVING SPACES
+  { name:"Organic curved sectional — performance linen", category:"Living Spaces", room:"Living Room", style:"Coastal Contemporary", brand:"RH (Restoration Hardware), Arhaus, Crate & Barrel", price:"$8,000-25,000", status:"Inspiration", notes:"Low profile, curved silhouette, neutral linen or bouclé. RH Cloud Collection is aspirational benchmark." },
+  { name:"Travertine or marble coffee table — sculptural", category:"Living Spaces", room:"Living Room", style:"Quiet Luxury", brand:"CB2, West Elm, Arteriors, Serena & Lily", price:"$1,500-8,000", status:"Inspiration", notes:"Organic stone form. Arteriors and CB2 Fuze collection lead 2026 sculptural coffee table trend." },
+  { name:"Jute or sisal area rug — large format", category:"Living Spaces", room:"Living Room", style:"Pacific NW Organic", brand:"Serena & Lily, Pottery Barn, Dash & Albert", price:"$800-3,000", status:"Inspiration", notes:"Natural fiber ground. Serena & Lily Pebble Weave and Dash & Albert are best quality-to-cost." },
+  { name:"Oversized linen or velvet occasional chairs", category:"Living Spaces", room:"Living Room", style:"Japandi Coastal", brand:"Room & Board, Design Within Reach, Blu Dot", price:"$1,200-4,000/pair", status:"Inspiration", notes:"Low, wide, enveloping. Room & Board Jasper Chair and DWR Eames Lounge are benchmark." },
+  { name:"Built-in media wall with wood surround", category:"Living Spaces", room:"Living Room", style:"Pacific NW Organic", brand:"Custom millwork (local), Porcelanosa, Milo Baughman", price:"$8,000-25,000", status:"Inspiration", notes:"Floor-to-ceiling white oak or walnut millwork around fireplace/TV. Custom is best — match flooring species." },
+  { name:"Wabi-sabi ceramic vessel collection", category:"Living Spaces", room:"Living Room", style:"Japandi Coastal", brand:"Hasami Porcelain, Tortus Copenhagen, Heath Ceramics", price:"$100-800/piece", status:"Inspiration", notes:"Organic imperfection as art. Heath Ceramics (CA) is accessible luxury. Tortus Copenhagen is aspirational." },
+
+  // KITCHEN & SCULLERY
+  { name:"White oak or walnut shaker cabinetry — integrated pulls", category:"Kitchen & Scullery", room:"Kitchen", style:"Pacific NW Organic", brand:"Custom (local), Plain English, DeVol Kitchens", price:"$35,000-120,000", status:"Inspiration", notes:"DeVol and Plain English are UK benchmark brands that define the quiet luxury kitchen. Local custom can match." },
+  { name:"Sub-Zero panel-ready column refrigerator", category:"Kitchen & Scullery", room:"Kitchen", style:"Quiet Luxury", brand:"Sub-Zero, Gaggenau, Miele", price:"$8,000-15,000", status:"Inspiration", notes:"Panel-ready = disappears into cabinetry. Sub-Zero 30\" column pairs with matching freezer column." },
+  { name:"Wolf 6-burner dual fuel range", category:"Kitchen & Scullery", room:"Kitchen", style:"Coastal Contemporary", brand:"Wolf, La Cornue, Bertazzoni", price:"$8,000-20,000", status:"Inspiration", notes:"Wolf DF486CG is the workhorse benchmark. La Cornue is the aspirational show piece." },
+  { name:"Unlacquered brass pot filler — wall mount", category:"Kitchen & Scullery", room:"Kitchen", style:"Coastal Contemporary", brand:"Waterworks, Rohl, Phylrich", price:"$800-2,000", status:"Inspiration", notes:"Unlacquered brass ages to warm gold. Waterworks Henry Collection is top spec." },
+  { name:"Miele fully integrated dishwasher", category:"Kitchen & Scullery", room:"Kitchen", style:"Quiet Luxury", brand:"Miele, Bosch Benchmark, Fisher & Paykel", price:"$2,000-4,000", status:"Inspiration", notes:"Panel-ready, whisper quiet. Miele G7000 series is the benchmark." },
+  { name:"Walk-in pantry with open shelving + scullery sink", category:"Kitchen & Scullery", room:"Kitchen", style:"Pacific NW Organic", brand:"Custom millwork, IKEA Pax (budget), Rev-A-Shelf", price:"$5,000-20,000", status:"Inspiration", notes:"Scullery trend 2026: second prep sink, appliance storage, mess prep out of main kitchen sightlines." },
+  { name:"Temperature-controlled wine room — glass-front", category:"Kitchen & Scullery", room:"Kitchen", style:"Quiet Luxury", brand:"Wine Guardian, WhisperKOOL, EuroCave", price:"$8,000-30,000", status:"Inspiration", notes:"Glass-front door with warm lighting. Wine Guardian ductless unit is best spec for residential." },
+
+  // PRIMARY SUITE & BATH
+  { name:"Freestanding soaker tub — matte stone or cast iron", category:"Primary Suite & Bath", room:"Primary Bath", style:"Coastal Contemporary", brand:"Waterworks, Victoria + Albert, BainUltra", price:"$3,000-12,000", status:"Inspiration", notes:"V+A Amalfi or Eldon are top freestanding tubs. Positioned facing water view is the move." },
+  { name:"Walk-in wet room — natural stone, no threshold", category:"Primary Suite & Bath", room:"Primary Bath", style:"Japandi Coastal", brand:"Walker Zanger, Porcelanosa, Cle Tile", price:"$15,000-40,000", status:"Inspiration", notes:"No door, no threshold. Waterproof tile to ceiling. Linear drain. The 2026 primary bath standard." },
+  { name:"Floating double vanity — white oak", category:"Primary Suite & Bath", room:"Primary Bath", style:"Pacific NW Organic", brand:"Robern, Kohler Statement, Custom millwork", price:"$4,000-15,000", status:"Inspiration", notes:"Wall-mount, white oak or walnut, undermount sinks. Robern Profiles series is benchmark." },
+  { name:"Heated floors — hydronic or electric", category:"Primary Suite & Bath", room:"Primary Bath", style:"Quiet Luxury", brand:"Warmup, Nuheat, Schluter Ditra-Heat", price:"$15-25/sqft installed", status:"Inspiration", notes:"Warmup 4iE smart thermostat with floor sensor is the spec. Schluter for tile installations." },
+  { name:"Chandelier over freestanding tub", category:"Primary Suite & Bath", room:"Primary Bath", style:"Coastal Contemporary", brand:"Visual Comfort, Apparatus, Kelly Wearstler", price:"$1,500-8,000", status:"Inspiration", notes:"Visual Comfort Alexa Hampton or Thomas O'Brien collections. Coastal brass or aged bronze finish." },
+  { name:"Primary suite reading nook — built-in with window seat", category:"Primary Suite & Bath", room:"Primary Suite", style:"Pacific NW Organic", brand:"Custom millwork, IKEA Pax (base), local joiner", price:"$5,000-15,000", status:"Inspiration", notes:"Window seat with storage below, built-in bookcase flanking. Faces water if possible." },
+
+  // OUTDOOR & DECK
+  { name:"Ipe or Cumaru hardwood decking — oiled", category:"Outdoor & Deck", room:"Outdoor", style:"Pacific NW Organic", brand:"West Timber Agency, Advantage Lumber, Kebony", price:"$20-40/sqft installed", status:"Inspiration", notes:"Ipe is 3x harder than teak. Oils to warm honey. Kebony is sustainable modified wood alternative." },
+  { name:"Teak outdoor dining set — 10-seat", category:"Outdoor & Deck", room:"Outdoor", style:"Coastal Contemporary", brand:"Gloster, Brown Jordan, Harbour Outdoor", price:"$8,000-25,000", status:"Inspiration", notes:"Gloster is the top-spec teak outdoor brand. Harbour Outdoor is Australian benchmark." },
+  { name:"Architectural fire feature — linear gas", category:"Outdoor & Deck", room:"Outdoor", style:"Coastal Contemporary", brand:"EcoSmart Fire, Planika, Spark Modern Fires", price:"$3,000-15,000", status:"Inspiration", notes:"EcoSmart Fire Mix 1200 is the architectural benchmark. Bioethanol or gas. No chimney required." },
+  { name:"Louvered pergola — motorized", category:"Outdoor & Deck", room:"Outdoor", style:"Quiet Luxury", brand:"Struxure, Sunesta, Weinor", price:"$20,000-60,000", status:"Inspiration", notes:"Struxure Pergola X is the benchmark motorized louvered pergola. Integrates lighting and screens." },
+  { name:"Outdoor kitchen — built-in grill, refrigerator, sink", category:"Outdoor & Deck", room:"Outdoor", style:"Pacific NW Organic", brand:"Kalamazoo Outdoor Gourmet, Lynx, Twin Eagles", price:"$15,000-50,000", status:"Inspiration", notes:"Kalamazoo is the aspirational benchmark. Lynx is top-spec value. Concrete countertops for coastal." },
+
+  // LIGHTING
+  { name:"Sculptural pendant lighting — kitchen island", category:"Lighting", room:"Kitchen", style:"Coastal Contemporary", brand:"Visual Comfort, Apparatus Studio, Roll & Hill", price:"$800-4,000/fixture", status:"Inspiration", notes:"Visual Comfort Kelly Wearstler or Thomas O'Brien. Aged brass or bronze. 3 pendants over island." },
+  { name:"Recessed lighting — warm 2700K throughout", category:"Lighting", room:"Living Room", style:"Quiet Luxury", brand:"Lutron, Ketra, Cree", price:"$100-300/fixture installed", status:"Inspiration", notes:"Ketra is the circadian benchmark — tunable white and color. Pairs with Lutron Homeworks QSX." },
+  { name:"Lutron Homeworks QSX whole-home dimming", category:"Lighting", room:"Other", style:"Quiet Luxury", brand:"Lutron", price:"$15,000-40,000 system", status:"Inspiration", notes:"The industry gold standard for whole-home lighting control. Integrates with Ketra for circadian tuning." },
+  { name:"Statement chandelier — entry or dining", category:"Lighting", room:"Entry", style:"Coastal Contemporary", brand:"Apparatus Studio, Kelly Wearstler, Ochre", price:"$3,000-20,000", status:"Inspiration", notes:"Apparatus Studio is the NYC benchmark for sculptural lighting. Ochre for organic forms." },
+  { name:"Outdoor wall sconces — unlacquered brass", category:"Lighting", room:"Outdoor", style:"Pacific NW Organic", brand:"Visual Comfort, Barn Light Electric, Rejuvenation", price:"$400-1,200/fixture", status:"Inspiration", notes:"Visual Comfort IKE Outdoor Collection. Rejuvenation for Arts & Crafts-influenced PNW aesthetic." },
+
+  // TEXTILES
+  { name:"Bouclé throw pillows and blankets", category:"Textiles & Soft Furnishings", room:"Living Room", style:"Quiet Luxury", brand:"Beni Rugs, Coyuchi, Hawkins New York", price:"$100-600/piece", status:"Inspiration", notes:"Bouclé is the defining 2026 quiet luxury textile. Coyuchi for organic cotton. Beni for Moroccan wool." },
+  { name:"Hand-knotted wool area rug — neutral tones", category:"Textiles & Soft Furnishings", room:"Living Room", style:"Quiet Luxury", brand:"Arini, Warp & Weft, Nodus", price:"$3,000-15,000", status:"Inspiration", notes:"Arini and Nodus are the top-spec hand-knotted rug brands. Warp & Weft for accessible quality." },
+  { name:"Linen bedding — enzyme-washed", category:"Textiles & Soft Furnishings", room:"Primary Suite", style:"Japandi Coastal", brand:"Parachute, Cultiver, Brooklinen", price:"$300-800/set", status:"Inspiration", notes:"Cultiver is the benchmark for enzyme-washed linen. Parachute for value. Stone, oat, or sand tones." },
+  { name:"Organic cotton Turkish towels — oversized", category:"Textiles & Soft Furnishings", room:"Primary Bath", style:"Coastal Contemporary", brand:"Coyuchi, Boll & Branch, Abyss & Habidecor", price:"$80-200/towel", status:"Inspiration", notes:"Abyss & Habidecor is the luxury benchmark. Coyuchi for organic. 800gsm weight minimum." },
+
+  // FURNITURE
+  { name:"Dining table — live-edge walnut or bleached oak", category:"Furniture", room:"Living Room", style:"Pacific NW Organic", brand:"Black Creek Designs, Elko Hardwoods, custom", price:"$5,000-20,000", status:"Inspiration", notes:"Live-edge slab dining table is the PNW design statement. 10-seat. Local makers preferred." },
+  { name:"Office desk — floating walnut with integrated cable mgmt", category:"Furniture", room:"Office", style:"Quiet Luxury", brand:"Knoll, Herman Miller, Custom millwork", price:"$3,000-12,000", status:"Inspiration", notes:"Herman Miller motif desk or custom floating walnut. Must face water. Cable management essential for work setup." },
+  { name:"Bedroom side tables — sculptural ceramic or stone", category:"Furniture", room:"Primary Suite", style:"Japandi Coastal", brand:"CB2, West Elm, Article", price:"$400-1,500/pair", status:"Inspiration", notes:"Organic form, matte finish. CB2 Arched side table or West Elm Anton for 2026 Japandi look." },
+
+  // ART & OBJECTS
+  { name:"Large-format coastal photography — framed", category:"Art & Objects", room:"Living Room", style:"Coastal Contemporary", brand:"Artifact Uprising, WhiteWall, local gallery", price:"$500-5,000", status:"Inspiration", notes:"Own photography of Saanich Peninsula, Strait of Georgia, or Pacific Northwest coastline. Artifact Uprising printing." },
+  { name:"Sculptural ceramic vessels — oversized floor vases", category:"Art & Objects", room:"Living Room", style:"Japandi Coastal", brand:"Heath Ceramics, Tortus Copenhagen, local makers", price:"$300-3,000", status:"Inspiration", notes:"2-3 oversized floor vessels in varying heights. Heath Ceramics SF/LA is accessible luxury benchmark." },
+  { name:"Driftwood or organic sculptural object", category:"Art & Objects", room:"Entry", style:"Pacific NW Organic", brand:"Local artists, Chairish, 1stDibs", price:"$200-2,000", status:"Inspiration", notes:"Foraged driftwood, stone cairns, organic sculpture. Entry statement that connects to waterfront setting." },
+
+  // CONTRACTORS & VENDORS
+  { name:"Interior designer — Pacific Northwest specialist", category:"Contractors & Vendors", room:"Other", style:"Coastal Contemporary", brand:"Studio Roslyn (Vancouver), BYU Interiors (Victoria), Evoke International", price:"$150-400/hr + 20% on procurement", status:"Inspiration", notes:"Evoke International (Vancouver) specializes in high-end coastal BC. BYU Interiors is Victoria-based top spec." },
+  { name:"Kitchen designer — custom millwork specialist", category:"Contractors & Vendors", room:"Kitchen", style:"Quiet Luxury", brand:"Custom millwork shops (Sidney/Victoria area), Woodmaster, Bellamy Enterprises", price:"$50,000-150,000 kitchen", status:"Inspiration", notes:"Source local Victoria/Sidney custom millwork shops for white oak and walnut cabinetry. Lead time 6-12 months." },
+];
+
+const RV_DESIGN_SEED = [
+  // PALETTE & MATERIALS
+  { name:"Aged barnwood accent wall — living room feature", category:"Palette & Materials", room:"Living Room", style:"Rustic Refined", brand:"Elmwood Reclaimed Timber, Reclaimed DesignWorks, Stikwood", price:"$15-40/sqft installed", status:"Inspiration", notes:"Reclaimed barnwood or weathered grey pine. Stikwood is the easiest peel-and-stick option for condo walls." },
+  { name:"Dark moody palette — forest green, charcoal, navy", category:"Palette & Materials", room:"Living Room", style:"Dark Mountain Moody", brand:"Farrow & Ball, Benjamin Moore, Clare Paint", price:"$100-200/gallon", status:"Inspiration", notes:"F&B Studio Green, Railings, or Hague Blue. Benjamin Moore Wrought Iron or Black Forest Green for value." },
+  { name:"Concrete-look porcelain tile — large format", category:"Palette & Materials", room:"Kitchen", style:"Alpine Modern", brand:"Porcelanosa, Marazzi, Atlas Concorde", price:"$8-18/sqft + install", status:"Inspiration", notes:"Large 24x48 or 48x48 format. Porcelanosa Rodano Acero is the benchmark. Groutless look." },
+  { name:"Warm natural stone — slate or sandstone", category:"Palette & Materials", room:"Living Room", style:"Rustic Refined", brand:"MSI Surfaces, Dal-Tile, Arizona Tile", price:"$12-25/sqft", status:"Inspiration", notes:"Slate tile on fireplace surround or feature wall. Warm earthy tones connect to mountain landscape." },
+  { name:"Black matte fixtures and hardware throughout", category:"Palette & Materials", room:"Primary Bath", style:"Alpine Modern", brand:"Brizo, Kohler Purist, Hansgrohe", price:"$300-1,500/fixture", status:"Inspiration", notes:"Matte black is the Alpine Modern signature finish. Brizo Frank Lloyd Wright Collection is aspirational." },
+  { name:"Warm wood tones — smoked oak or fumed ash", category:"Palette & Materials", room:"Living Room", style:"Scandinavian Lodge", brand:"Dinesen, Kahrs, Boen", price:"$15-30/sqft installed", status:"Inspiration", notes:"Dinesen is the Danish benchmark for wide-plank smoked/fumed floors. Kahrs for accessible quality." },
+
+  // LIVING & FIREPLACE
+  { name:"Gas fireplace — linear, floor-to-ceiling stone surround", category:"Living & Fireplace", room:"Living Room", style:"Rustic Refined", brand:"Heat & Glo, Ortal, Napoleon", price:"$8,000-25,000 installed", status:"Inspiration", notes:"Ortal is the high-design benchmark for linear gas fireplaces. Floor-to-ceiling stone or concrete surround." },
+  { name:"Deep sectional — dark velvet or leather", category:"Living & Fireplace", room:"Living Room", style:"Dark Mountain Moody", brand:"RH, Minotti, B&B Italia", price:"$6,000-20,000", status:"Inspiration", notes:"Deep, enveloping. Dark forest green velvet or cognac leather. RH Kensington Collection. Minotti for aspirational." },
+  { name:"Sheepskin and fur throw collection", category:"Living & Fireplace", room:"Living Room", style:"Scandinavian Lodge", brand:"UGG, Overland, Shepherd of Sweden", price:"$200-800/piece", status:"Inspiration", notes:"Layered sheepskin and wool throws across sofa and chairs. Shepherd of Sweden is the authentic benchmark." },
+  { name:"Low wood coffee table — live edge or slab", category:"Living & Fireplace", room:"Living Room", style:"Rustic Refined", brand:"Local artisans, Croft House, Cisco Brothers", price:"$2,000-8,000", status:"Inspiration", notes:"Live edge slab in walnut, maple, or pine. Croft House (LA) does refined rustic benchmark." },
+  { name:"Antler or iron chandelier over dining area", category:"Living & Fireplace", room:"Living Room", style:"Rustic Refined", brand:"Hubbardton Forge, Arteriors, Barn Light Electric", price:"$1,500-6,000", status:"Inspiration", notes:"Hubbardton Forge is the Vermont-made benchmark for mountain/lodge lighting. Handcrafted iron." },
+
+  // KITCHEN
+  { name:"Dark shaker cabinetry — navy or forest green", category:"Kitchen", room:"Kitchen", style:"Dark Mountain Moody", brand:"Custom millwork, Ikea Sektion (budget), Semihandmade", price:"$15,000-60,000", status:"Inspiration", notes:"Semihandmade fronts on IKEA boxes is the best quality-to-cost for condo kitchens. Custom for full spec." },
+  { name:"Waterfall island — butcher block or dark granite", category:"Kitchen", room:"Kitchen", style:"Rustic Refined", brand:"Boos Blocks, local stone fabricators, Wilsonart", price:"$3,000-15,000", status:"Inspiration", notes:"Boos Walnut butcher block for warm rustic. Dark Absolute Black granite for moody contrast." },
+  { name:"Wolf or Bertazzoni range — 30\" or 36\"", category:"Kitchen", room:"Kitchen", style:"Alpine Modern", brand:"Wolf, Bertazzoni, Bosch", price:"$3,000-8,000", status:"Inspiration", notes:"Bertazzoni is the Italian design benchmark for mountain aesthetic at accessible price. Wolf for top spec." },
+  { name:"Open shelving — blackened steel and reclaimed wood", category:"Kitchen", room:"Kitchen", style:"Dark Mountain Moody", brand:"Floating Shelf Co, custom fabrication, CB2", price:"$500-3,000", status:"Inspiration", notes:"Blackened steel brackets with live-edge or reclaimed wood shelves. Strong mountain industrial aesthetic." },
+  { name:"Fisher & Paykel integrated refrigerator — panel ready", category:"Kitchen", room:"Kitchen", style:"Alpine Modern", brand:"Fisher & Paykel, Bosch, Liebherr", price:"$3,500-8,000", status:"Inspiration", notes:"Fisher & Paykel ActiveSmart panel-ready is excellent quality-to-cost. Integrates cleanly in condo kitchen." },
+
+  // PRIMARY SUITE
+  { name:"Upholstered platform bed — dark linen or velvet", category:"Primary Suite", room:"Primary Suite", style:"Dark Mountain Moody", brand:"RH, CB2, West Elm", price:"$2,500-8,000", status:"Inspiration", notes:"Low profile, upholstered headboard to ceiling or wall. Dark forest green or charcoal velvet. RH Restoration Collection." },
+  { name:"Steam shower — tile to ceiling, bench", category:"Primary Suite", room:"Primary Bath", style:"Alpine Modern", brand:"Mr. Steam, Kohler, ThermaSol", price:"$5,000-15,000 installed", status:"Inspiration", notes:"Mr. Steam is the benchmark generator brand. Pairs with large-format tile and rainfall head." },
+  { name:"Soaking tub — Japanese ofuro style", category:"Primary Suite", room:"Primary Bath", style:"Japandi Mountain", brand:"Wet Style, Native Trails, Acquabella", price:"$2,500-8,000", status:"Inspiration", notes:"Deep Japanese soaking tub in wood or stone resin. Native Trails Brindisi is the benchmark." },
+  { name:"Blackout motorized shades — primary suite", category:"Primary Suite", room:"Primary Suite", style:"Alpine Modern", brand:"Lutron, Hunter Douglas, The Shade Store", price:"$800-2,500/window", status:"Inspiration", notes:"Essential for ski condo — morning sun hits hard at elevation. Lutron Sivoia QS motorized is top spec." },
+
+  // SKI STORAGE & MUDROOM
+  { name:"Built-in ski locker — heated boot dryer integrated", category:"Ski Storage & Mudroom", room:"Ski Room", style:"Alpine Modern", brand:"Custom millwork, Skibox (BC), local fabricator", price:"$3,000-12,000", status:"Inspiration", notes:"Custom built-in with ski rack, boot dryer, helmet shelf, and charging station. Essential spec for Revelstoke condo." },
+  { name:"Bench with hooks and storage — entry mudroom", category:"Ski Storage & Mudroom", room:"Ski Room", style:"Scandinavian Lodge", brand:"IKEA Hemnes (budget), custom millwork, Pottery Barn", price:"$500-5,000", status:"Inspiration", notes:"Bench with under-seat storage, coat hooks at two heights, tray for wet boots. Scandinavian lodge staple." },
+  { name:"Heated tile floor — entry/mudroom", category:"Ski Storage & Mudroom", room:"Ski Room", style:"Alpine Modern", brand:"Warmup, Nuheat, Schluter", price:"$15-25/sqft installed", status:"Inspiration", notes:"Non-negotiable in a ski condo — wet boots and gear need warmth at entry. Schluter Ditra-Heat is best spec." },
+
+  // LIGHTING & HARDWARE
+  { name:"Edison bulb cage pendants — kitchen island", category:"Lighting & Hardware", room:"Kitchen", style:"Rustic Refined", brand:"Barn Light Electric, Rejuvenation, Schoolhouse", price:"$300-800/fixture", status:"Inspiration", notes:"Barn Light Electric makes the definitive American industrial pendant. Cage style over kitchen island." },
+  { name:"Matte black cabinet pulls — bar style", category:"Lighting & Hardware", room:"Kitchen", style:"Alpine Modern", brand:"Emtek, Top Knobs, Atlas Homewares", price:"$15-60/pull", status:"Inspiration", notes:"Matte black bar pulls are the Alpine Modern signature. Emtek is the benchmark for quality and selection." },
+  { name:"Sconce lighting flanking bed — plug-in swing arm", category:"Lighting & Hardware", room:"Primary Suite", style:"Scandinavian Lodge", brand:"Visual Comfort, Cedar + Moss, Schoolhouse", price:"$300-800/pair", status:"Inspiration", notes:"Swing arm wall sconces free up bedside tables. Cedar + Moss is a top small-batch lighting brand." },
+
+  // TEXTILES & RUGS
+  { name:"Oversized wool flatweave rug — geometric pattern", category:"Textiles & Rugs", room:"Living Room", style:"Alpine Modern", brand:"Loloi, Jaipur Living, Beni Rugs", price:"$800-4,000", status:"Inspiration", notes:"Geometric or abstract pattern in warm neutrals and charcoal. Loloi Jess Collection is excellent value." },
+  { name:"Chunky hand-knit wool throw", category:"Textiles & Rugs", room:"Living Room", style:"Scandinavian Lodge", brand:"Faribault Woolen Mill, Pendleton, Juniper & Gale", price:"$200-600", status:"Inspiration", notes:"Faribault is the Minnesota benchmark for American woolen mill throws. Pendleton for Pacific NW heritage." },
+  { name:"Mongolian sheepskin rug — natural white", category:"Textiles & Rugs", room:"Primary Suite", style:"Rustic Refined", brand:"UGG, Overland, Restoration Hardware", price:"$300-1,200", status:"Inspiration", notes:"Beside bed on hardwood or beside fireplace on stone. Natural white sheepskin is timeless mountain luxury." },
+  { name:"Flannel and wool bedding — layered", category:"Textiles & Rugs", room:"Primary Suite", style:"Scandinavian Lodge", brand:"Pendleton, L.L. Bean, Parachute", price:"$400-1,000/set", status:"Inspiration", notes:"Layered wool blanket + flannel duvet. Pendleton Woolen Mills National Park collection is iconic." },
+
+  // FURNITURE
+  { name:"Scandinavian dining chairs — solid oak", category:"Furniture", room:"Living Room", style:"Scandinavian Lodge", brand:"Hay, Muuto, Fritz Hansen", price:"$400-900/chair", status:"Inspiration", notes:"Hay About A Chair, Muuto Rest, or Fritz Hansen Series 7 in natural oak. Danish design benchmark." },
+  { name:"Reading chair — swivel leather club", category:"Furniture", room:"Living Room", style:"Rustic Refined", brand:"RH, Croft House, Design Within Reach", price:"$2,000-6,000", status:"Inspiration", notes:"Cognac or saddle leather swivel club chair by fireplace. DWR Wireframe chair for Alpine Modern version." },
+  { name:"Floating walnut bookcase — built-in", category:"Furniture", room:"Living Room", style:"Japandi Mountain", brand:"Custom millwork, Resource Furniture, California Closets", price:"$3,000-10,000", status:"Inspiration", notes:"Wall-to-wall floating walnut shelving. Resource Furniture for high-design modular. Custom for full spec." },
+
+  // ART & OBJECTS
+  { name:"Mountain photography — large format, local artists", category:"Art & Objects", room:"Living Room", style:"Alpine Modern", brand:"Artifact Uprising, WhiteWall, local Revelstoke galleries", price:"$500-5,000", status:"Inspiration", notes:"Kicking Horse, Glacier NP, Columbia River valley imagery. Support local Revelstoke and Golden photographers." },
+  { name:"Topographic map art — framed custom", category:"Art & Objects", room:"Living Room", style:"Alpine Modern", brand:"Maptote, Landfall Maps, custom print shops", price:"$200-800", status:"Inspiration", notes:"Custom topographic map of Revelstoke/Kicking Horse area. Framed in black or natural wood. Iconic mountain statement." },
+  { name:"Carved wood or antler sculptural objects", category:"Art & Objects", room:"Living Room", style:"Rustic Refined", brand:"Local artists, Chairish, 1stDibs", price:"$300-3,000", status:"Inspiration", notes:"Hand-carved wood vessels, antler candlesticks, stone cairns. Connect interior to mountain setting." },
+
+  // CONTRACTORS & VENDORS
+  { name:"Interior designer — mountain/ski chalet specialist", category:"Contractors & Vendors", room:"Other", style:"Alpine Modern", brand:"Grounds Kent Design (Whistler), Denise Rotten Design (Kelowna), local Revelstoke designers", price:"$150-300/hr + 15-20% procurement", status:"Inspiration", notes:"Grounds Kent in Whistler is the benchmark for BC mountain luxury interiors. Worth the travel for a condo renovation." },
+  { name:"Property management — Revelstoke specialist", category:"Contractors & Vendors", room:"Other", style:"Alpine Modern", brand:"Vacasa, Revelstoke Mountain Resort, Slopeside Property Management", price:"15-25% of rental revenue", status:"Inspiration", notes:"Slopeside PM specializes in Revelstoke ski properties. Vacasa for broader reach. Essential for rental offset strategy." },
+];
+
   { item:"Soy Milk", category:"Dairy & Milk", checked:false, added_by:"" },
   { item:"Almond Milk", category:"Dairy & Milk", checked:false, added_by:"" },
   { item:"Half & Half", category:"Dairy & Milk", checked:false, added_by:"" },
@@ -221,6 +359,7 @@ export default function WeenTeam() {
   const [designError, setDesignError] = useState(null);
   const [designCatFilter, setDesignCatFilter] = useState("All");
   const [designStatusFilter, setDesignStatusFilter] = useState("All");
+  const [designStyleFilter, setDesignStyleFilter] = useState("All");
   const [showAddDesign, setShowAddDesign] = useState(false);
   const [newDesign, setNewDesign] = useState({ name:"", category:"", room:"", image_url:"", brand:"", price:"", status:"Inspiration", notes:"" });
 
@@ -246,6 +385,15 @@ export default function WeenTeam() {
     setDesignLoading(true); setDesignError(null);
     try { setDesignItems(await sb("GET", designTable)); }
     catch { setDesignError("Could not load design items."); }
+    setDesignLoading(false);
+  }
+
+  async function seedDesign(table, seed) {
+    setDesignLoading(true); setDesignError(null);
+    try {
+      for (const item of seed) { await sb("POST", table, item); }
+      setDesignItems(await sb("GET", table));
+    } catch(e) { setDesignError("Seed failed: " + e.message); }
     setDesignLoading(false);
   }
 
@@ -451,9 +599,12 @@ export default function WeenTeam() {
 
     const filteredDesign = designItems.filter(d=>
       (designCatFilter==="All"||d.category===designCatFilter) &&
-      (designStatusFilter==="All"||d.status===designStatusFilter)
+      (designStatusFilter==="All"||d.status===designStatusFilter) &&
+      (designStyleFilter==="All"||d.style===designStyleFilter)
     );
     const groupedDesign = dCats.map(cat=>({ cat, items:filteredDesign.filter(d=>d.category===cat) })).filter(g=>g.items.length>0);
+    const dStyles = isRvD ? RV_STYLES : VI_STYLES;
+    const dSeed = isRvD ? RV_DESIGN_SEED : VI_DESIGN_SEED;
 
     return (
       <div style={{ fontFamily:"'Georgia','Times New Roman',serif", background:"#f8f6f0", minHeight:"100vh" }}>
@@ -473,15 +624,31 @@ export default function WeenTeam() {
 
           {designError&&<div style={{background:"#5a1a1a",color:"#ffaaaa",padding:"7px 12px",borderRadius:"4px",marginTop:"10px",fontSize:"12px"}}>{designError}</div>}
 
-          {/* Filters */}
-          <div style={{ display:"flex", gap:"8px", marginTop:"12px", flexWrap:"wrap", alignItems:"center" }}>
+          {/* Style filters */}
+          <div style={{ display:"flex", gap:"6px", marginTop:"12px", flexWrap:"wrap", alignItems:"center" }}>
+            <span style={{fontSize:"9px",letterSpacing:"1.5px",textTransform:"uppercase",color:"#5a7a5a"}}>Style</span>
+            <div onClick={()=>setDesignStyleFilter("All")}
+              style={{background:designStyleFilter==="All"?"rgba(255,255,255,0.2)":"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"3px",padding:"3px 10px",fontSize:"10px",cursor:"pointer",color:designStyleFilter==="All"?"#d4c9a0":"#8a9c8a"}}>
+              All
+            </div>
+            {dStyles.map(s=>(
+              <div key={s} onClick={()=>setDesignStyleFilter(designStyleFilter===s?"All":s)}
+                style={{background:designStyleFilter===s?`${STYLE_COLORS[s]}33`:"rgba(255,255,255,0.07)",border:`1px solid ${designStyleFilter===s?STYLE_COLORS[s]:"rgba(255,255,255,0.12)"}`,borderRadius:"3px",padding:"3px 10px",fontSize:"10px",cursor:"pointer",color:designStyleFilter===s?STYLE_COLORS[s]:"#8a9c8a",transition:"all 0.2s"}}>
+                {s} ({designItems.filter(d=>d.style===s).length})
+              </div>
+            ))}
+          </div>
+
+          {/* Status filters */}
+          <div style={{ display:"flex", gap:"6px", marginTop:"8px", flexWrap:"wrap", alignItems:"center" }}>
+            <span style={{fontSize:"9px",letterSpacing:"1.5px",textTransform:"uppercase",color:"#5a7a5a"}}>Status</span>
             {DESIGN_STATUSES.map(s=>(
               <div key={s} onClick={()=>setDesignStatusFilter(designStatusFilter===s?"All":s)}
                 style={{background:"rgba(255,255,255,0.07)",border:`1px solid ${designStatusFilter===s?STATUS_COLORS[s]:"rgba(255,255,255,0.12)"}`,borderRadius:"3px",padding:"3px 10px",fontSize:"10px",cursor:"pointer",color:designStatusFilter===s?STATUS_COLORS[s]:"#8a9c8a",transition:"all 0.2s"}}>
                 {s} ({designItems.filter(d=>d.status===s).length})
               </div>
             ))}
-            {designStatusFilter!=="All"&&<span onClick={()=>setDesignStatusFilter("All")} style={{color:"#7a9c7a",fontSize:"11px",cursor:"pointer",textDecoration:"underline"}}>clear</span>}
+            {(designStyleFilter!=="All"||designStatusFilter!=="All")&&<span onClick={()=>{setDesignStyleFilter("All");setDesignStatusFilter("All");}} style={{color:"#7a9c7a",fontSize:"11px",cursor:"pointer",textDecoration:"underline"}}>clear</span>}
           </div>
         </div>
 
@@ -510,6 +677,10 @@ export default function WeenTeam() {
                   <select value={newDesign.category} onChange={e=>setNewDesign({...newDesign,category:e.target.value})} style={SS}>{dCats.map(c=><option key={c}>{c}</option>)}</select>
                   <select value={newDesign.room} onChange={e=>setNewDesign({...newDesign,room:e.target.value})} style={SS}>{dRooms.map(r=><option key={r}>{r}</option>)}</select>
                   <select value={newDesign.status} onChange={e=>setNewDesign({...newDesign,status:e.target.value})} style={SS}>{DESIGN_STATUSES.map(s=><option key={s}>{s}</option>)}</select>
+                  <select value={newDesign.style||""} onChange={e=>setNewDesign({...newDesign,style:e.target.value})} style={SS}>
+                    <option value="">Style...</option>
+                    {dStyles.map(s=><option key={s}>{s}</option>)}
+                  </select>
                 </div>
                 <input value={newDesign.name} onChange={e=>setNewDesign({...newDesign,name:e.target.value})} placeholder="Item name..." style={{...IS,width:"100%",marginBottom:"6px"}} autoFocus />
                 <input value={newDesign.image_url} onChange={e=>setNewDesign({...newDesign,image_url:e.target.value})} placeholder="Image URL (paste from Pinterest, Houzz, etc.)..." style={{...IS,width:"100%",marginBottom:"6px"}} />
@@ -531,7 +702,10 @@ export default function WeenTeam() {
           {!designLoading&&designItems.length===0&&(
             <div style={{textAlign:"center",padding:"40px",color:"#7a8a7a"}}>
               <div style={{fontSize:"14px",marginBottom:"8px"}}>No design items yet.</div>
-              <div style={{fontSize:"12px",color:"#9a8a7a"}}>Add items by pasting image URLs from Pinterest, Houzz, brand sites, or anywhere on the web.</div>
+              <div style={{fontSize:"12px",color:"#9a8a7a",marginBottom:"16px"}}>Load the suggested library to get started with styles, brands and recommendations — then add your own images and notes.</div>
+              <button onClick={()=>seedDesign(isRvD?"rv_design":"vi_design", dSeed)} style={{...BS,background:dAccent,color:"#fff",fontSize:"13px",padding:"10px 24px"}}>
+                Load Design Library ({dSeed.length} items)
+              </button>
             </div>
           )}
 
@@ -560,6 +734,7 @@ export default function WeenTeam() {
                       <div style={{display:"flex",gap:"5px",flexWrap:"wrap",marginBottom:"5px"}}>
                         <span style={{fontSize:"9px",letterSpacing:"0.5px",padding:"2px 6px",borderRadius:"10px",background:STATUS_COLORS[item.status]||"#7a9a7a",color:"#fff"}}>{item.status}</span>
                         {item.room&&<span style={{fontSize:"9px",color:"#8a7a5a",padding:"2px 6px",borderRadius:"10px",background:"#f0ece4"}}>{item.room}</span>}
+                        {item.style&&<span style={{fontSize:"9px",color:STYLE_COLORS[item.style]||"#7a7a7a",padding:"2px 6px",borderRadius:"10px",border:`1px solid ${STYLE_COLORS[item.style]||"#c0b898"}`}}>{item.style}</span>}
                       </div>
                       {item.brand&&<div style={{fontSize:"11px",color:"#7a6a4a",marginBottom:"2px"}}>{item.brand}</div>}
                       {item.price&&<div style={{fontSize:"11px",color:dAccent,fontWeight:"bold",marginBottom:"4px"}}>{item.price}</div>}
