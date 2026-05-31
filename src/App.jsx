@@ -18,6 +18,11 @@ const PRIORITIES = ["Must Have","Want","Nice to Have"];
 const SOURCES = ["Existing","2026 Trend"];
 const STATUSES = ["Under Discussion","Confirmed","Rejected","Deferred"];
 const GROCERY_CATS = ["Dairy & Milk","Cheese","Yogurt & Breakfast","Deli Meats","Meat","Produce & Frozen","Chips & Crackers","Dips & Spreads","Nuts & Bars","Pantry","Teas","Toiletries","Other"];
+const VI_DESIGN_CATS = ["Palette & Materials","Living Spaces","Kitchen & Scullery","Primary Suite & Bath","Outdoor & Deck","Lighting","Textiles & Soft Furnishings","Furniture","Art & Objects","Contractors & Vendors"];
+const RV_DESIGN_CATS = ["Palette & Materials","Living & Fireplace","Kitchen","Primary Suite","Ski Storage & Mudroom","Lighting & Hardware","Textiles & Rugs","Furniture","Art & Objects","Contractors & Vendors"];
+const DESIGN_STATUSES = ["Inspiration","Shortlisted","Purchased","Rejected"];
+const DESIGN_ROOMS_VI = ["Living Room","Kitchen","Primary Suite","Primary Bath","Office","Outdoor","Guest Room","Entry","Other"];
+const DESIGN_ROOMS_RV = ["Living Room","Kitchen","Primary Suite","Primary Bath","Ski Room","Deck","Guest Room","Other"];
 
 const PC = {
   "Must Have":    { border:"#4a7c4a", badge:"#2d5a2d", chip:"#7dbb7d", label:"MUST" },
@@ -210,6 +215,14 @@ export default function WeenTeam() {
   const [rvPrice, setRvPrice] = useState({ min:"CAD $900K", max:"CAD $1.25M", editing:false });
   const [viPriceDraft, setViPriceDraft] = useState({ min:"", max:"" });
   const [rvPriceDraft, setRvPriceDraft] = useState({ min:"", max:"" });
+  const [designItems, setDesignItems] = useState([]);
+  const [designLoading, setDesignLoading] = useState(false);
+  const [designSaving, setDesignSaving] = useState(false);
+  const [designError, setDesignError] = useState(null);
+  const [designCatFilter, setDesignCatFilter] = useState("All");
+  const [designStatusFilter, setDesignStatusFilter] = useState("All");
+  const [showAddDesign, setShowAddDesign] = useState(false);
+  const [newDesign, setNewDesign] = useState({ name:"", category:"", room:"", image_url:"", brand:"", price:"", status:"Inspiration", notes:"" });
 
   const isVI = screen === "vi_attributes";
   const isRV = screen === "rv_attributes";
@@ -220,7 +233,47 @@ export default function WeenTeam() {
   useEffect(() => {
     if (isVI || isRV) loadAttributes();
     if (screen === "groceries") loadGroceries();
+    if (screen === "vi_design" || screen === "rv_design") loadDesign();
   }, [screen]);
+
+  const isVIDesign = screen === "vi_design";
+  const isRVDesign = screen === "rv_design";
+  const designTable = isRVDesign ? "rv_design" : "vi_design";
+  const designCats = isRVDesign ? RV_DESIGN_CATS : VI_DESIGN_CATS;
+  const designRooms = isRVDesign ? DESIGN_ROOMS_RV : DESIGN_ROOMS_VI;
+
+  async function loadDesign() {
+    setDesignLoading(true); setDesignError(null);
+    try { setDesignItems(await sb("GET", designTable)); }
+    catch { setDesignError("Could not load design items."); }
+    setDesignLoading(false);
+  }
+
+  async function handleAddDesign() {
+    if (!newDesign.name.trim()) return;
+    setDesignSaving(true);
+    try {
+      await sb("POST", designTable, { ...newDesign, category: newDesign.category || designCats[0], room: newDesign.room || designRooms[0] });
+      await loadDesign();
+      setNewDesign({ name:"", category:"", room:"", image_url:"", brand:"", price:"", status:"Inspiration", notes:"" });
+      setShowAddDesign(false);
+    } catch(e) { setDesignError("Save failed: " + e.message); }
+    setDesignSaving(false);
+  }
+
+  async function updateDesignStatus(id, status) {
+    await fetch(`${SUPABASE_URL}/rest/v1/${designTable}?id=eq.${id}`, {
+      method:"PATCH", headers:{ ...HEADERS },
+      body: JSON.stringify({ status })
+    });
+    setDesignItems(designItems.map(d=>d.id===id?{...d,status}:d));
+  }
+
+  async function deleteDesignItem(id) {
+    if (!confirm("Delete this item?")) return;
+    await fetch(`${SUPABASE_URL}/rest/v1/${designTable}?id=eq.${id}`, { method:"DELETE", headers:{ ...HEADERS } });
+    setDesignItems(designItems.filter(d=>d.id!==id));
+  }
 
   async function loadAttributes() {
     setLoading(true); setError(null); setActiveCat("All"); setPriFilter("All"); setSrcFilter("All");
@@ -380,11 +433,157 @@ export default function WeenTeam() {
       <div style={{ fontSize:"28px", fontWeight:"bold", color:"#d4c9a0", marginBottom:"6px" }}>Design Boards</div>
       <div style={{ fontSize:"13px", color:"#5a7a5a", marginBottom:"40px" }}>Separate vision for each property</div>
       <div style={{ display:"flex", flexDirection:"column", gap:"10px", width:"100%", maxWidth:"340px" }}>
-        <DashCard icon="🌊" title="Vancouver Island" subtitle="Beach Home · Coming Soon" disabled accent="#4a7c4a" />
-        <DashCard icon="⛷️" title="Revelstoke" subtitle="Mountain Home · Coming Soon" disabled accent="#5a7aac" />
+        <DashCard icon="🌊" title="Vancouver Island" subtitle="Beach Home · Design Board" onClick={()=>setScreen("vi_design")} accent="#4a7c4a" />
+        <DashCard icon="⛷️" title="Revelstoke" subtitle="Mountain Home · Design Board" onClick={()=>setScreen("rv_design")} accent="#5a7aac" />
       </div>
     </div>
   );
+
+  // ── INTERIOR DESIGN BOARD ─────────────────────────────────
+  if (screen==="vi_design" || screen==="rv_design") {
+    const isRvD = screen==="rv_design";
+    const dLabel = isRvD ? "Revelstoke" : "Vancouver Island";
+    const dSub = isRvD ? "Mountain Home · Revelstoke, BC" : "Beach Home · North Saanich, BC";
+    const dAccent = isRvD ? "#5a7aac" : "#4a7c4a";
+    const dCats = isRvD ? RV_DESIGN_CATS : VI_DESIGN_CATS;
+    const dRooms = isRvD ? DESIGN_ROOMS_RV : DESIGN_ROOMS_VI;
+    const STATUS_COLORS = { "Inspiration":"#7a4a9c", "Shortlisted":"#4a6a9c", "Purchased":"#2d5a2d", "Rejected":"#7c2d2d" };
+
+    const filteredDesign = designItems.filter(d=>
+      (designCatFilter==="All"||d.category===designCatFilter) &&
+      (designStatusFilter==="All"||d.status===designStatusFilter)
+    );
+    const groupedDesign = dCats.map(cat=>({ cat, items:filteredDesign.filter(d=>d.category===cat) })).filter(g=>g.items.length>0);
+
+    return (
+      <div style={{ fontFamily:"'Georgia','Times New Roman',serif", background:"#f8f6f0", minHeight:"100vh" }}>
+        <div style={{ background:"#1a2a1a", color:"#d4c9a0", padding:"20px 24px 14px", borderBottom:`3px solid ${dAccent}` }}>
+          <button onClick={()=>setScreen("interior_design")} style={{ background:"none", border:"none", color:"#5a9c5a", fontSize:"12px", cursor:"pointer", padding:"0 0 6px 0", letterSpacing:"1px" }}>← INTERIOR DESIGN</button>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", flexWrap:"wrap", gap:"8px" }}>
+            <div>
+              <div style={{ fontSize:"10px", letterSpacing:"3px", textTransform:"uppercase", color:"#5a7a5a" }}>{dSub}</div>
+              <div style={{ fontSize:"22px", fontWeight:"bold" }}>{dLabel} Design</div>
+              <div style={{ fontSize:"12px", color:"#5a7a5a", marginTop:"1px" }}>
+                {designLoading?"Loading...":`${designItems.length} items`}
+                {designSaving&&<span style={{color:"#ccaa6d",marginLeft:"8px"}}>Saving...</span>}
+              </div>
+            </div>
+            <button onClick={loadDesign} style={{...BS,background:"rgba(255,255,255,0.1)",color:"#d4c9a0",border:"1px solid rgba(255,255,255,0.2)"}}>↻</button>
+          </div>
+
+          {designError&&<div style={{background:"#5a1a1a",color:"#ffaaaa",padding:"7px 12px",borderRadius:"4px",marginTop:"10px",fontSize:"12px"}}>{designError}</div>}
+
+          {/* Filters */}
+          <div style={{ display:"flex", gap:"8px", marginTop:"12px", flexWrap:"wrap", alignItems:"center" }}>
+            {DESIGN_STATUSES.map(s=>(
+              <div key={s} onClick={()=>setDesignStatusFilter(designStatusFilter===s?"All":s)}
+                style={{background:"rgba(255,255,255,0.07)",border:`1px solid ${designStatusFilter===s?STATUS_COLORS[s]:"rgba(255,255,255,0.12)"}`,borderRadius:"3px",padding:"3px 10px",fontSize:"10px",cursor:"pointer",color:designStatusFilter===s?STATUS_COLORS[s]:"#8a9c8a",transition:"all 0.2s"}}>
+                {s} ({designItems.filter(d=>d.status===s).length})
+              </div>
+            ))}
+            {designStatusFilter!=="All"&&<span onClick={()=>setDesignStatusFilter("All")} style={{color:"#7a9c7a",fontSize:"11px",cursor:"pointer",textDecoration:"underline"}}>clear</span>}
+          </div>
+        </div>
+
+        {/* Category tabs */}
+        <div style={{ background:"#2a3a2a", padding:"0 24px", display:"flex", overflowX:"auto", borderBottom:"2px solid #3a5a3a" }}>
+          {["All",...dCats].map(cat=>(
+            <button key={cat} onClick={()=>setDesignCatFilter(cat)} style={{
+              background:"none",border:"none",
+              borderBottom:designCatFilter===cat?`2px solid ${dAccent}`:"2px solid transparent",
+              color:designCatFilter===cat?"#d4c9a0":"#5a7a5a",
+              padding:"8px 10px",fontSize:"10px",letterSpacing:"0.5px",cursor:"pointer",whiteSpace:"nowrap",marginBottom:"-2px"
+            }}>
+              {cat==="All"?`ALL (${designItems.length})`:`${cat.split(" & ")[0].split(" /")[0].toUpperCase()} (${designItems.filter(d=>d.category===cat).length})`}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ padding:"18px 24px", maxWidth:"1100px" }}>
+          {/* Add Item */}
+          <div style={{marginBottom:"16px"}}>
+            {!showAddDesign?(
+              <button onClick={()=>{setShowAddDesign(true);setNewDesign({name:"",category:dCats[0],room:dRooms[0],image_url:"",brand:"",price:"",status:"Inspiration",notes:""});}} style={{...BS,background:"#2d5a2d",color:"#d4c9a0"}}>+ Add Item</button>
+            ):(
+              <div style={{background:"#fff",border:"1px solid #c0b898",borderRadius:"5px",padding:"14px",maxWidth:"600px"}}>
+                <div style={{display:"flex",gap:"7px",flexWrap:"wrap",marginBottom:"8px"}}>
+                  <select value={newDesign.category} onChange={e=>setNewDesign({...newDesign,category:e.target.value})} style={SS}>{dCats.map(c=><option key={c}>{c}</option>)}</select>
+                  <select value={newDesign.room} onChange={e=>setNewDesign({...newDesign,room:e.target.value})} style={SS}>{dRooms.map(r=><option key={r}>{r}</option>)}</select>
+                  <select value={newDesign.status} onChange={e=>setNewDesign({...newDesign,status:e.target.value})} style={SS}>{DESIGN_STATUSES.map(s=><option key={s}>{s}</option>)}</select>
+                </div>
+                <input value={newDesign.name} onChange={e=>setNewDesign({...newDesign,name:e.target.value})} placeholder="Item name..." style={{...IS,width:"100%",marginBottom:"6px"}} autoFocus />
+                <input value={newDesign.image_url} onChange={e=>setNewDesign({...newDesign,image_url:e.target.value})} placeholder="Image URL (paste from Pinterest, Houzz, etc.)..." style={{...IS,width:"100%",marginBottom:"6px"}} />
+                <div style={{display:"flex",gap:"7px",marginBottom:"8px"}}>
+                  <input value={newDesign.brand} onChange={e=>setNewDesign({...newDesign,brand:e.target.value})} placeholder="Brand / Source..." style={{...IS,flex:1}} />
+                  <input value={newDesign.price} onChange={e=>setNewDesign({...newDesign,price:e.target.value})} placeholder="Price..." style={{...IS,width:"100px"}} />
+                </div>
+                <input value={newDesign.notes} onChange={e=>setNewDesign({...newDesign,notes:e.target.value})} placeholder="Notes..." style={{...IS,width:"100%",marginBottom:"10px",fontSize:"12px"}} />
+                <div style={{display:"flex",gap:"7px"}}>
+                  <button onClick={handleAddDesign} disabled={designSaving} style={{...BS,background:"#2d5a2d",color:"#fff"}}>{designSaving?"Saving...":"Save"}</button>
+                  <button onClick={()=>setShowAddDesign(false)} style={{...BS,background:"#eee",color:"#555"}}>Cancel</button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {designLoading&&<div style={{textAlign:"center",padding:"40px",color:"#7a8a7a"}}>Loading...</div>}
+
+          {!designLoading&&designItems.length===0&&(
+            <div style={{textAlign:"center",padding:"40px",color:"#7a8a7a"}}>
+              <div style={{fontSize:"14px",marginBottom:"8px"}}>No design items yet.</div>
+              <div style={{fontSize:"12px",color:"#9a8a7a"}}>Add items by pasting image URLs from Pinterest, Houzz, brand sites, or anywhere on the web.</div>
+            </div>
+          )}
+
+          {/* Grouped thumbnail grid */}
+          {groupedDesign.map(({cat,items:catItems})=>(
+            <div key={cat} style={{marginBottom:"28px"}}>
+              <div style={{fontSize:"10px",letterSpacing:"3px",textTransform:"uppercase",color:"#5a7a5a",borderBottom:"1px solid #d0c8b0",paddingBottom:"4px",marginBottom:"14px"}}>
+                {cat} <span style={{color:"#9a8a5a"}}>({catItems.length})</span>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:"14px"}}>
+                {catItems.map(item=>(
+                  <div key={item.id} style={{background:"#fff",border:"1px solid #e0d8c0",borderRadius:"6px",overflow:"hidden",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+                    {/* Thumbnail */}
+                    {item.image_url ? (
+                      <div style={{width:"100%",height:"160px",overflow:"hidden",background:"#f0ece4",position:"relative"}}>
+                        <img src={item.image_url} alt={item.name} onError={e=>{e.target.style.display="none";e.target.nextSibling.style.display="flex";}}
+                          style={{width:"100%",height:"100%",objectFit:"cover"}} />
+                        <div style={{display:"none",width:"100%",height:"100%",alignItems:"center",justifyContent:"center",fontSize:"11px",color:"#9a8a7a",position:"absolute",top:0,left:0,background:"#f0ece4"}}>Image unavailable</div>
+                      </div>
+                    ) : (
+                      <div style={{width:"100%",height:"160px",background:"#f0ece4",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",color:"#9a8a7a"}}>No image</div>
+                    )}
+                    {/* Details */}
+                    <div style={{padding:"10px 12px"}}>
+                      <div style={{fontSize:"13px",fontWeight:"bold",color:"#1a2a1a",marginBottom:"3px",lineHeight:"1.3"}}>{item.name}</div>
+                      <div style={{display:"flex",gap:"5px",flexWrap:"wrap",marginBottom:"5px"}}>
+                        <span style={{fontSize:"9px",letterSpacing:"0.5px",padding:"2px 6px",borderRadius:"10px",background:STATUS_COLORS[item.status]||"#7a9a7a",color:"#fff"}}>{item.status}</span>
+                        {item.room&&<span style={{fontSize:"9px",color:"#8a7a5a",padding:"2px 6px",borderRadius:"10px",background:"#f0ece4"}}>{item.room}</span>}
+                      </div>
+                      {item.brand&&<div style={{fontSize:"11px",color:"#7a6a4a",marginBottom:"2px"}}>{item.brand}</div>}
+                      {item.price&&<div style={{fontSize:"11px",color:dAccent,fontWeight:"bold",marginBottom:"4px"}}>{item.price}</div>}
+                      {item.notes&&<div style={{fontSize:"10px",color:"#8a7a6a",fontStyle:"italic",marginBottom:"6px",lineHeight:"1.4"}}>{item.notes}</div>}
+                      {/* Status buttons */}
+                      <div style={{display:"flex",gap:"4px",flexWrap:"wrap",marginTop:"6px"}}>
+                        {DESIGN_STATUSES.filter(s=>s!==item.status).map(s=>(
+                          <button key={s} onClick={()=>updateDesignStatus(item.id,s)}
+                            style={{fontSize:"9px",padding:"2px 6px",border:`1px solid ${STATUS_COLORS[s]}`,borderRadius:"3px",background:"none",color:STATUS_COLORS[s],cursor:"pointer"}}>
+                            {s}
+                          </button>
+                        ))}
+                        <button onClick={()=>deleteDesignItem(item.id)} style={{fontSize:"9px",padding:"2px 6px",border:"1px solid #cc7a7a",borderRadius:"3px",background:"none",color:"#cc7a7a",cursor:"pointer",marginLeft:"auto"}}>✕</button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   // ── GROCERIES ─────────────────────────────────────────────
   if (screen==="groceries") {
