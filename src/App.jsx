@@ -284,6 +284,7 @@ const RV_DESIGN_SEED = [
   { name:"Property management — Revelstoke specialist", category:"Contractors & Vendors", room:"Other", style:"Alpine Modern", brand:"Vacasa, Revelstoke Mountain Resort, Slopeside Property Management", price:"15-25% of rental revenue", status:"Inspiration", notes:"Slopeside PM specializes in Revelstoke ski properties. Vacasa for broader reach. Essential for rental offset strategy." },
 ];
 
+const GROCERY_SEED = [
   { item:"Soy Milk", category:"Dairy & Milk", checked:false, added_by:"" },
   { item:"Almond Milk", category:"Dairy & Milk", checked:false, added_by:"" },
   { item:"Half & Half", category:"Dairy & Milk", checked:false, added_by:"" },
