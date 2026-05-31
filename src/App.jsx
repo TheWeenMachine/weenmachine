@@ -12,7 +12,7 @@ const CATEGORIES = [
 const PRIORITIES = ["Must Have","Want","Nice to Have"];
 const SOURCES = ["Existing","2026 Trend"];
 const STATUSES = ["Under Discussion","Confirmed","Rejected","Deferred"];
-const GROCERY_CATS = ["Produce","Meat & Fish","Dairy","Bakery","Pantry","Frozen","Drinks","Household","Other"];
+const GROCERY_CATS = ["Dairy & Milk","Cheese","Yogurt & Breakfast","Deli Meats","Meat","Produce & Frozen","Chips & Crackers","Dips & Spreads","Nuts & Bars","Pantry","Teas","Toiletries","Other"];
 
 const PC = {
   "Must Have":    { border:"#4a7c4a", badge:"#2d5a2d", chip:"#7dbb7d", label:"MUST" },
@@ -30,11 +30,9 @@ const HEADERS = {
   "Content-Type": "application/json",
 };
 
-async function sb(method, table, body, id) {
+async function sb(method, table, body) {
   const base = `${SUPABASE_URL}/rest/v1/${table}`;
-  const url = method === "GET"
-    ? `${base}?order=created_at.asc&limit=500`
-    : id ? `${base}?id=eq.${id}` : base;
+  const url = method === "GET" ? `${base}?order=created_at.asc&limit=500` : base;
   const res = await fetch(url, {
     method,
     headers: { ...HEADERS, "Prefer": method === "POST" ? "return=representation" : "return=minimal" },
@@ -43,7 +41,9 @@ async function sb(method, table, body, id) {
   if (method === "GET") return res.json();
   if (!res.ok) { const t = await res.text(); throw new Error(t); }
   return true;
-}const SEED = [
+}
+
+const SEED = [
   { text:"Waterfront — ocean frontage, Saanich Peninsula", category:"Site & Location", priority:"Must Have", source:"Existing", status:"Under Discussion", notes:"Primary driver of the BC move" },
   { text:"Deep Cove / North Saanich neighbourhood", category:"Site & Location", priority:"Must Have", source:"Existing", status:"Under Discussion", notes:"R-2 zoning, low density, quiet marine community" },
   { text:"Private lot — minimal visible neighbours", category:"Site & Location", priority:"Must Have", source:"Existing", status:"Under Discussion", notes:"" },
@@ -121,13 +121,57 @@ async function sb(method, table, body, id) {
   { text:"Helicopter pad or pad-suitable area", category:"Nice to Have", priority:"Nice to Have", source:"Existing", status:"Under Discussion", notes:"" },
   { text:"Salt inhalation room / sensory deprivation tank", category:"Nice to Have", priority:"Nice to Have", source:"2026 Trend", status:"Under Discussion", notes:"2026 luxury wellness: halotherapy gaining traction" },
   { text:"Courtyard / internal garden — Japanese-influenced serene framing", category:"Nice to Have", priority:"Nice to Have", source:"2026 Trend", status:"Under Discussion", notes:"Shakkei design: interior courtyards as composed natural scenes" },
-];export default function WeenTeam() {
+];
+
+const GROCERY_SEED = [
+  { item:"Soy Milk", category:"Dairy & Milk", checked:false, added_by:"" },
+  { item:"Almond Milk", category:"Dairy & Milk", checked:false, added_by:"" },
+  { item:"Half & Half", category:"Dairy & Milk", checked:false, added_by:"" },
+  { item:"Creamer", category:"Dairy & Milk", checked:false, added_by:"" },
+  { item:"Buttermilk", category:"Dairy & Milk", checked:false, added_by:"" },
+  { item:"Cream Cheese", category:"Cheese", checked:false, added_by:"" },
+  { item:"Babybel", category:"Cheese", checked:false, added_by:"" },
+  { item:"Cottage Cheese", category:"Cheese", checked:false, added_by:"" },
+  { item:"Cheese Crisps", category:"Cheese", checked:false, added_by:"" },
+  { item:"Xtra Crispy Cheez-It", category:"Cheese", checked:false, added_by:"" },
+  { item:"Pre-mixed Yogurt (Brown Cow & Siggi's)", category:"Yogurt & Breakfast", checked:false, added_by:"" },
+  { item:"Cream of Wheat", category:"Yogurt & Breakfast", checked:false, added_by:"" },
+  { item:"Eggs", category:"Yogurt & Breakfast", checked:false, added_by:"" },
+  { item:"Bagels", category:"Yogurt & Breakfast", checked:false, added_by:"" },
+  { item:"Ham", category:"Deli Meats", checked:false, added_by:"" },
+  { item:"Roast Beef", category:"Deli Meats", checked:false, added_by:"" },
+  { item:"Chicken Thighs", category:"Meat", checked:false, added_by:"" },
+  { item:"Steaks", category:"Meat", checked:false, added_by:"" },
+  { item:"Avocado", category:"Produce & Frozen", checked:false, added_by:"" },
+  { item:"Frozen Fruit", category:"Produce & Frozen", checked:false, added_by:"" },
+  { item:"Potato Chips", category:"Chips & Crackers", checked:false, added_by:"" },
+  { item:"Tortilla Chips", category:"Chips & Crackers", checked:false, added_by:"" },
+  { item:"French Onion Dip", category:"Dips & Spreads", checked:false, added_by:"" },
+  { item:"Bean Dip", category:"Dips & Spreads", checked:false, added_by:"" },
+  { item:"Mayonnaise", category:"Dips & Spreads", checked:false, added_by:"" },
+  { item:"Crunchy Peanut Butter", category:"Dips & Spreads", checked:false, added_by:"" },
+  { item:"Honey", category:"Dips & Spreads", checked:false, added_by:"" },
+  { item:"Hot Fudge", category:"Dips & Spreads", checked:false, added_by:"" },
+  { item:"Marcona Almonds (salted)", category:"Nuts & Bars", checked:false, added_by:"" },
+  { item:"Pistachios (salted)", category:"Nuts & Bars", checked:false, added_by:"" },
+  { item:"Aloha Bars", category:"Nuts & Bars", checked:false, added_by:"" },
+  { item:"Rayo's Tomato Sauce", category:"Pantry", checked:false, added_by:"" },
+  { item:"Dishwashing Detergent", category:"Pantry", checked:false, added_by:"" },
+  { item:"Peppermint Herbal Tea", category:"Teas", checked:false, added_by:"" },
+  { item:"Lemon Ginger Tea", category:"Teas", checked:false, added_by:"" },
+  { item:"Chamomile Herbal Tea", category:"Teas", checked:false, added_by:"" },
+  { item:"Antiperspirant", category:"Toiletries", checked:false, added_by:"" },
+  { item:"Crest Pro White", category:"Toiletries", checked:false, added_by:"" },
+];
+
+export default function WeenTeam() {
   const [screen, setScreen] = useState("home");
   const [items, setItems] = useState([]);
   const [groceries, setGroceries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [seeding, setSeeding] = useState(false);
+  const [seedingGroceries, setSeedingGroceries] = useState(false);
   const [error, setError] = useState(null);
   const [activeCat, setActiveCat] = useState("All");
   const [priFilter, setPriFilter] = useState("All");
@@ -136,8 +180,10 @@ async function sb(method, table, body, id) {
   const [editingId, setEditingId] = useState(null);
   const [newItem, setNewItem] = useState({ text:"", category:CATEGORIES[0], priority:"Must Have", source:"Existing", status:"Under Discussion", notes:"" });
   const [editItem, setEditItem] = useState({});
-  const [newGrocery, setNewGrocery] = useState({ item:"", category:"General", added_by:"" });
+  const [newGrocery, setNewGrocery] = useState({ item:"", category:GROCERY_CATS[0], added_by:"" });
   const [showAddGrocery, setShowAddGrocery] = useState(false);
+  const [addingToCat, setAddingToCat] = useState(null);
+  const [quickItem, setQuickItem] = useState("");
 
   useEffect(() => {
     if (screen === "attributes") loadAttributes();
@@ -161,12 +207,19 @@ async function sb(method, table, body, id) {
   async function seedData() {
     setSeeding(true); setError(null);
     try {
-      for (const item of SEED) {
-        await sb("POST","home_attributes", item);
-      }
+      for (const item of SEED) { await sb("POST","home_attributes", item); }
       await loadAttributes();
     } catch(e) { setError("Seed failed: " + e.message); }
     setSeeding(false);
+  }
+
+  async function seedGroceries() {
+    setSeedingGroceries(true); setError(null);
+    try {
+      for (const item of GROCERY_SEED) { await sb("POST","groceries", item); }
+      await loadGroceries();
+    } catch(e) { setError("Grocery seed failed: " + e.message); }
+    setSeedingGroceries(false);
   }
 
   async function handleAddAttr() {
@@ -185,8 +238,7 @@ async function sb(method, table, body, id) {
     setSaving(true);
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/home_attributes?id=eq.${editingId}`, {
-        method:"PATCH",
-        headers:{ ...HEADERS },
+        method:"PATCH", headers:{ ...HEADERS },
         body: JSON.stringify({ text:editItem.text, category:editItem.category, priority:editItem.priority, source:editItem.source, status:editItem.status, notes:editItem.notes })
       });
       await loadAttributes();
@@ -197,10 +249,7 @@ async function sb(method, table, body, id) {
 
   async function handleDeleteAttr(id) {
     if (!confirm("Delete this attribute?")) return;
-    await fetch(`${SUPABASE_URL}/rest/v1/home_attributes?id=eq.${id}`, {
-      method:"DELETE",
-      headers:{ ...HEADERS }
-    });
+    await fetch(`${SUPABASE_URL}/rest/v1/home_attributes?id=eq.${id}`, { method:"DELETE", headers:{ ...HEADERS } });
     setItems(items.filter(i=>i.id!==id));
   }
 
@@ -210,26 +259,34 @@ async function sb(method, table, body, id) {
     try {
       await sb("POST","groceries", { ...newGrocery, checked:false });
       await loadGroceries();
-      setNewGrocery({ item:"", category:"General", added_by:"" });
+      setNewGrocery({ item:"", category:GROCERY_CATS[0], added_by:"" });
       setShowAddGrocery(false);
+    } catch { setError("Save failed."); }
+    setSaving(false);
+  }
+
+  async function handleQuickAdd(cat) {
+    if (!quickItem.trim()) return;
+    setSaving(true);
+    try {
+      await sb("POST","groceries", { item:quickItem.trim(), category:cat, checked:false, added_by:"" });
+      await loadGroceries();
+      setQuickItem("");
+      setAddingToCat(null);
     } catch { setError("Save failed."); }
     setSaving(false);
   }
 
   async function toggleGrocery(id, checked) {
     await fetch(`${SUPABASE_URL}/rest/v1/groceries?id=eq.${id}`, {
-      method:"PATCH",
-      headers:{ ...HEADERS },
+      method:"PATCH", headers:{ ...HEADERS },
       body: JSON.stringify({ checked: !checked })
     });
     setGroceries(groceries.map(g=>g.id===id?{...g,checked:!checked}:g));
   }
 
   async function deleteGrocery(id) {
-    await fetch(`${SUPABASE_URL}/rest/v1/groceries?id=eq.${id}`, {
-      method:"DELETE",
-      headers:{ ...HEADERS }
-    });
+    await fetch(`${SUPABASE_URL}/rest/v1/groceries?id=eq.${id}`, { method:"DELETE", headers:{ ...HEADERS } });
     setGroceries(groceries.filter(g=>g.id!==id));
   }
 
@@ -246,6 +303,7 @@ async function sb(method, table, body, id) {
   const grouped = CATEGORIES.map(cat=>({ cat, items:filtered.filter(i=>i.category===cat) })).filter(g=>g.items.length>0);
   const counts = { "Must Have":items.filter(i=>i.priority==="Must Have").length, "Want":items.filter(i=>i.priority==="Want").length, "Nice to Have":items.filter(i=>i.priority==="Nice to Have").length };
 
+  // HOME
   if (screen==="home") return (
     <div style={{ fontFamily:"'Georgia','Times New Roman',serif", background:"#0f1a0f", minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"40px 20px" }}>
       <div style={{ fontSize:"10px", letterSpacing:"4px", textTransform:"uppercase", color:"#4a7c4a", marginBottom:"8px" }}>Team Ween</div>
@@ -257,63 +315,105 @@ async function sb(method, table, body, id) {
         <DashCard icon="🎨" title="Interior Design" subtitle="Coming soon" disabled />
         <DashCard icon="⛷️" title="Golden Condo" subtitle="Coming soon" disabled />
       </div>
-      <div style={{ marginTop:"40px", fontSize:"11px", color:"#3a5a3a", letterSpacing:"1px" }}>
-        WEENTEAM · {new Date().getFullYear()}
-      </div>
+      <div style={{ marginTop:"40px", fontSize:"11px", color:"#3a5a3a", letterSpacing:"1px" }}>WEENTEAM · {new Date().getFullYear()}</div>
     </div>
   );
 
+  // GROCERIES
   if (screen==="groceries") {
     const unchecked = groceries.filter(g=>!g.checked);
     const checked = groceries.filter(g=>g.checked);
+    const groupedGroceries = GROCERY_CATS.map(cat=>({ cat, items: unchecked.filter(g=>g.category===cat) })).filter(g=>g.items.length>0);
+    const uncategorized = unchecked.filter(g=>!GROCERY_CATS.includes(g.category));
     return (
       <div style={{ fontFamily:"'Georgia','Times New Roman',serif", background:"#f8f6f0", minHeight:"100vh" }}>
         <div style={{ background:"#1a2a1a", color:"#d4c9a0", padding:"20px 24px 16px" }}>
           <button onClick={()=>setScreen("home")} style={{ background:"none", border:"none", color:"#5a9c5a", fontSize:"12px", cursor:"pointer", padding:"0 0 8px 0", letterSpacing:"1px" }}>← DASHBOARD</button>
-          <div style={{ fontSize:"22px", fontWeight:"bold" }}>Grocery List</div>
-          <div style={{ fontSize:"12px", color:"#5a7a5a", marginTop:"2px" }}>{unchecked.length} items remaining{saving?" · Saving...":""}</div>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+            <div>
+              <div style={{ fontSize:"22px", fontWeight:"bold" }}>Grocery List</div>
+              <div style={{ fontSize:"12px", color:"#5a7a5a", marginTop:"2px" }}>{unchecked.length} to get · {checked.length} in cart{saving?" · Saving...":""}</div>
+            </div>
+            <div style={{ display:"flex", gap:"6px", flexWrap:"wrap" }}>
+              <button onClick={loadGroceries} style={{...BS,background:"rgba(255,255,255,0.1)",color:"#d4c9a0",border:"1px solid rgba(255,255,255,0.2)"}}>↻</button>
+              {checked.length>0&&<button onClick={clearChecked} style={{...BS,background:"#7c2d2d",color:"#fff"}}>Clear Cart ({checked.length})</button>}
+            </div>
+          </div>
         </div>
-        <div style={{ padding:"16px 24px", maxWidth:"600px" }}>
-          {error && <div style={{ background:"#ffeaea", color:"#a03030", padding:"8px 12px", borderRadius:"4px", marginBottom:"12px", fontSize:"12px" }}>{error}</div>}
-          {!showAddGrocery ? (
-            <button onClick={()=>setShowAddGrocery(true)} style={{ ...BS, background:"#2d5a2d", color:"#fff", marginBottom:"16px" }}>+ Add Item</button>
-          ) : (
-            <div style={{ background:"#fff", border:"1px solid #d0c8b0", borderRadius:"5px", padding:"12px", marginBottom:"16px" }}>
-              <input value={newGrocery.item} onChange={e=>setNewGrocery({...newGrocery,item:e.target.value})} placeholder="Item..." style={{...IS,width:"100%",marginBottom:"6px"}} onKeyDown={e=>e.key==="Enter"&&handleAddGrocery()} autoFocus />
-              <div style={{ display:"flex", gap:"7px", marginBottom:"8px" }}>
-                <select value={newGrocery.category} onChange={e=>setNewGrocery({...newGrocery,category:e.target.value})} style={SS}>{GROCERY_CATS.map(c=><option key={c}>{c}</option>)}</select>
-                <input value={newGrocery.added_by} onChange={e=>setNewGrocery({...newGrocery,added_by:e.target.value})} placeholder="Added by..." style={{...IS,flex:1}} />
-              </div>
-              <div style={{ display:"flex", gap:"7px" }}>
-                <button onClick={handleAddGrocery} disabled={saving} style={{...BS,background:"#2d5a2d",color:"#fff"}}>{saving?"Saving...":"Add"}</button>
-                <button onClick={()=>setShowAddGrocery(false)} style={{...BS,background:"#eee",color:"#555"}}>Cancel</button>
-              </div>
+        <div style={{ padding:"16px 24px", maxWidth:"640px" }}>
+          {error&&<div style={{background:"#ffeaea",color:"#a03030",padding:"8px 12px",borderRadius:"4px",marginBottom:"12px",fontSize:"12px"}}>{error}</div>}
+          {loading&&<div style={{textAlign:"center",padding:"30px",color:"#7a8a7a"}}>Loading...</div>}
+          {!loading&&groceries.length===0&&(
+            <div style={{textAlign:"center",padding:"30px",color:"#7a8a7a"}}>
+              <div style={{marginBottom:"12px",fontSize:"13px"}}>No groceries yet.</div>
+              <button onClick={seedGroceries} disabled={seedingGroceries} style={{...BS,background:"#2d5a2d",color:"#fff",fontSize:"13px",padding:"10px 24px"}}>
+                {seedingGroceries?"Loading list...":"Load My Grocery List"}
+              </button>
             </div>
           )}
-          {loading && <div style={{ textAlign:"center", padding:"30px", color:"#7a8a7a" }}>Loading...</div>}
-          {unchecked.map(g=>(
-            <div key={g.id} style={{ background:"#fff", border:"1px solid #e0d8c0", borderRadius:"4px", padding:"10px 12px", marginBottom:"5px", display:"flex", alignItems:"center", gap:"10px" }}>
-              <input type="checkbox" checked={false} onChange={()=>toggleGrocery(g.id,g.checked)} style={{ width:"16px", height:"16px", cursor:"pointer", accentColor:"#2d5a2d" }} />
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:"14px", color:"#1a2a1a" }}>{g.item}</div>
-                <div style={{ fontSize:"11px", color:"#8a7a5a" }}>{g.category}{g.added_by?` · ${g.added_by}`:""}</div>
+          {groupedGroceries.map(({cat,items:catItems})=>(
+            <div key={cat} style={{marginBottom:"18px"}}>
+              <div style={{fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",color:"#5a7a5a",borderBottom:"1px solid #d0c8b0",paddingBottom:"4px",marginBottom:"8px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span>{cat} <span style={{color:"#9a8a5a"}}>({catItems.length})</span></span>
+                <button onClick={()=>setAddingToCat(addingToCat===cat?null:cat)} style={{background:"none",border:"none",color:"#4a7c4a",fontSize:"11px",cursor:"pointer",letterSpacing:"0.5px"}}>+ add</button>
               </div>
-              <button onClick={()=>deleteGrocery(g.id)} style={{ background:"none", border:"none", color:"#cc7a7a", cursor:"pointer", fontSize:"16px" }}>×</button>
+              {addingToCat===cat&&(
+                <div style={{display:"flex",gap:"7px",marginBottom:"8px"}}>
+                  <input value={quickItem} onChange={e=>setQuickItem(e.target.value)} placeholder={`Add to ${cat}...`}
+                    style={{...IS,flex:1}} onKeyDown={e=>e.key==="Enter"&&handleQuickAdd(cat)} autoFocus />
+                  <button onClick={()=>handleQuickAdd(cat)} disabled={saving} style={{...BS,background:"#2d5a2d",color:"#fff"}}>Add</button>
+                  <button onClick={()=>{setAddingToCat(null);setQuickItem("");}} style={{...BS,background:"#eee",color:"#555"}}>✕</button>
+                </div>
+              )}
+              {catItems.map(g=>(
+                <div key={g.id} style={{background:"#fff",border:"1px solid #e0d8c0",borderRadius:"4px",padding:"10px 12px",marginBottom:"4px",display:"flex",alignItems:"center",gap:"10px"}}>
+                  <input type="checkbox" checked={false} onChange={()=>toggleGrocery(g.id,g.checked)} style={{width:"18px",height:"18px",cursor:"pointer",accentColor:"#2d5a2d",flexShrink:0}} />
+                  <div style={{flex:1,fontSize:"14px",color:"#1a2a1a"}}>{g.item}</div>
+                  <button onClick={()=>deleteGrocery(g.id)} style={{background:"none",border:"none",color:"#cc7a7a",cursor:"pointer",fontSize:"16px",padding:"0 2px"}}>×</button>
+                </div>
+              ))}
             </div>
           ))}
-          {checked.length>0 && (
-            <div style={{ marginTop:"20px" }}>
-              <div style={{ fontSize:"10px", letterSpacing:"2px", color:"#8a9a8a", textTransform:"uppercase", marginBottom:"8px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          {uncategorized.length>0&&(
+            <div style={{marginBottom:"18px"}}>
+              <div style={{fontSize:"10px",letterSpacing:"2px",textTransform:"uppercase",color:"#5a7a5a",borderBottom:"1px solid #d0c8b0",paddingBottom:"4px",marginBottom:"8px"}}>Other</div>
+              {uncategorized.map(g=>(
+                <div key={g.id} style={{background:"#fff",border:"1px solid #e0d8c0",borderRadius:"4px",padding:"10px 12px",marginBottom:"4px",display:"flex",alignItems:"center",gap:"10px"}}>
+                  <input type="checkbox" checked={false} onChange={()=>toggleGrocery(g.id,g.checked)} style={{width:"18px",height:"18px",cursor:"pointer",accentColor:"#2d5a2d"}} />
+                  <div style={{flex:1,fontSize:"14px",color:"#1a2a1a"}}>{g.item}</div>
+                  <button onClick={()=>deleteGrocery(g.id)} style={{background:"none",border:"none",color:"#cc7a7a",cursor:"pointer",fontSize:"16px"}}>×</button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div style={{marginTop:"8px"}}>
+            {!showAddGrocery?(
+              <button onClick={()=>setShowAddGrocery(true)} style={{...BS,background:"none",border:"1px dashed #a0b898",color:"#5a7a5a",width:"100%",padding:"10px"}}>+ Add Item to New Category</button>
+            ):(
+              <div style={{background:"#fff",border:"1px solid #d0c8b0",borderRadius:"5px",padding:"12px"}}>
+                <input value={newGrocery.item} onChange={e=>setNewGrocery({...newGrocery,item:e.target.value})} placeholder="Item..." style={{...IS,width:"100%",marginBottom:"6px"}} onKeyDown={e=>e.key==="Enter"&&handleAddGrocery()} autoFocus />
+                <div style={{display:"flex",gap:"7px",marginBottom:"8px"}}>
+                  <select value={newGrocery.category} onChange={e=>setNewGrocery({...newGrocery,category:e.target.value})} style={SS}>{GROCERY_CATS.map(c=><option key={c}>{c}</option>)}</select>
+                  <input value={newGrocery.added_by} onChange={e=>setNewGrocery({...newGrocery,added_by:e.target.value})} placeholder="Added by..." style={{...IS,flex:1}} />
+                </div>
+                <div style={{display:"flex",gap:"7px"}}>
+                  <button onClick={handleAddGrocery} disabled={saving} style={{...BS,background:"#2d5a2d",color:"#fff"}}>{saving?"Saving...":"Add"}</button>
+                  <button onClick={()=>setShowAddGrocery(false)} style={{...BS,background:"#eee",color:"#555"}}>Cancel</button>
+                </div>
+              </div>
+            )}
+          </div>
+          {checked.length>0&&(
+            <div style={{marginTop:"24px",paddingTop:"16px",borderTop:"1px dashed #c0b898"}}>
+              <div style={{fontSize:"10px",letterSpacing:"2px",color:"#8a9a8a",textTransform:"uppercase",marginBottom:"10px",display:"flex",justifyContent:"space-between"}}>
                 <span>In Cart ({checked.length})</span>
-                <button onClick={clearChecked} style={{ background:"none", border:"1px solid #c0b898", borderRadius:"3px", padding:"2px 8px", fontSize:"10px", color:"#8a7a5a", cursor:"pointer" }}>Clear all</button>
+                <button onClick={clearChecked} style={{background:"none",border:"1px solid #c0b898",borderRadius:"3px",padding:"2px 8px",fontSize:"10px",color:"#8a7a5a",cursor:"pointer"}}>Clear All</button>
               </div>
               {checked.map(g=>(
-                <div key={g.id} style={{ background:"#f0ece4", border:"1px solid #e0d8c0", borderRadius:"4px", padding:"10px 12px", marginBottom:"4px", display:"flex", alignItems:"center", gap:"10px", opacity:0.6 }}>
-                  <input type="checkbox" checked={true} onChange={()=>toggleGrocery(g.id,g.checked)} style={{ width:"16px", height:"16px", cursor:"pointer", accentColor:"#2d5a2d" }} />
-                  <div style={{ flex:1, textDecoration:"line-through" }}>
-                    <div style={{ fontSize:"14px", color:"#5a6a5a" }}>{g.item}</div>
-                  </div>
-                  <button onClick={()=>deleteGrocery(g.id)} style={{ background:"none", border:"none", color:"#cc7a7a", cursor:"pointer", fontSize:"16px" }}>×</button>
+                <div key={g.id} style={{background:"#f0ece4",border:"1px solid #e0d8c0",borderRadius:"4px",padding:"9px 12px",marginBottom:"4px",display:"flex",alignItems:"center",gap:"10px",opacity:0.55}}>
+                  <input type="checkbox" checked={true} onChange={()=>toggleGrocery(g.id,g.checked)} style={{width:"18px",height:"18px",cursor:"pointer",accentColor:"#2d5a2d"}} />
+                  <div style={{flex:1,textDecoration:"line-through",fontSize:"13px",color:"#5a6a5a"}}>{g.item}</div>
+                  <span style={{fontSize:"10px",color:"#8a7a5a"}}>{g.category}</span>
                 </div>
               ))}
             </div>
@@ -323,6 +423,7 @@ async function sb(method, table, body, id) {
     );
   }
 
+  // ATTRIBUTES
   return (
     <div style={{ fontFamily:"'Georgia','Times New Roman',serif", background:"#f8f6f0", minHeight:"100vh" }}>
       <style>{`@media print { .no-print{display:none!important} .item-row{break-inside:avoid} }`}</style>
@@ -338,7 +439,7 @@ async function sb(method, table, body, id) {
             </div>
           </div>
           <div style={{ display:"flex", gap:"6px", flexWrap:"wrap" }}>
-            <button onClick={loadAttributes} style={{...BS,background:"rgba(255,255,255,0.1)",color:"#d4c9a0",border:"1px solid rgba(255,255,255,0.2)"}}>↻ Refresh</button>
+            <button onClick={loadAttributes} style={{...BS,background:"rgba(255,255,255,0.1)",color:"#d4c9a0",border:"1px solid rgba(255,255,255,0.2)"}}>↻</button>
             <button onClick={()=>window.print()} style={{...BS,background:"rgba(255,255,255,0.1)",color:"#d4c9a0",border:"1px solid rgba(255,255,255,0.2)"}}>Print</button>
             {items.length===0&&!loading&&(
               <button onClick={seedData} disabled={seeding} style={{...BS,background:"#4a7c4a",color:"#fff"}}>
