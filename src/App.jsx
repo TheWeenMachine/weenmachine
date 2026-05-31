@@ -407,6 +407,26 @@ export default function WeenTeam() {
             </div>
           </div>
         </div>
+
+        {/* In Cart panel — top, always visible when items checked */}
+        {checked.length>0&&(
+          <div style={{ background:"#2d4a2d", borderBottom:"2px solid #4a7c4a", padding:"12px 24px" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"10px" }}>
+              <div style={{ fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"#7dbb7d", fontWeight:"bold" }}>
+                🛒 In Cart — {checked.length} item{checked.length!==1?"s":""}
+              </div>
+              <button onClick={clearChecked} style={{...BS,background:"#7c2d2d",color:"#fff",padding:"3px 10px",fontSize:"10px"}}>Clear All</button>
+            </div>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:"6px" }}>
+              {checked.map(g=>(
+                <div key={g.id} style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.2)", borderRadius:"20px", padding:"4px 10px 4px 8px", display:"flex", alignItems:"center", gap:"6px" }}>
+                  <span style={{ fontSize:"13px", color:"#d4c9a0" }}>{g.item}</span>
+                  <button onClick={()=>toggleGrocery(g.id,g.checked)} style={{ background:"none", border:"none", color:"#7dbb7d", cursor:"pointer", fontSize:"14px", padding:"0", lineHeight:1 }}>✕</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <div style={{ padding:"16px 24px", maxWidth:"640px" }}>
           {error&&<div style={{background:"#ffeaea",color:"#a03030",padding:"8px 12px",borderRadius:"4px",marginBottom:"12px",fontSize:"12px"}}>{error}</div>}
           {loading&&<div style={{textAlign:"center",padding:"30px",color:"#7a8a7a"}}>Loading...</div>}
@@ -470,21 +490,7 @@ export default function WeenTeam() {
               </div>
             )}
           </div>
-          {checked.length>0&&(
-            <div style={{marginTop:"24px",paddingTop:"16px",borderTop:"1px dashed #c0b898"}}>
-              <div style={{fontSize:"10px",letterSpacing:"2px",color:"#8a9a8a",textTransform:"uppercase",marginBottom:"10px",display:"flex",justifyContent:"space-between"}}>
-                <span>In Cart ({checked.length})</span>
-                <button onClick={clearChecked} style={{background:"none",border:"1px solid #c0b898",borderRadius:"3px",padding:"2px 8px",fontSize:"10px",color:"#8a7a5a",cursor:"pointer"}}>Clear All</button>
-              </div>
-              {checked.map(g=>(
-                <div key={g.id} style={{background:"#f0ece4",border:"1px solid #e0d8c0",borderRadius:"4px",padding:"9px 12px",marginBottom:"4px",display:"flex",alignItems:"center",gap:"10px",opacity:0.55}}>
-                  <input type="checkbox" checked={true} onChange={()=>toggleGrocery(g.id,g.checked)} style={{width:"18px",height:"18px",cursor:"pointer",accentColor:"#2d5a2d"}} />
-                  <div style={{flex:1,textDecoration:"line-through",fontSize:"13px",color:"#5a6a5a"}}>{g.item}</div>
-                  <span style={{fontSize:"10px",color:"#8a7a5a"}}>{g.category}</span>
-                </div>
-              ))}
-            </div>
-          )}
+
         </div>
       </div>
     );
