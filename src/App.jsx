@@ -61,6 +61,43 @@ async function sb(method, table, body) {
   return true;
 }
 
+// ── SUPABASE AUTH HELPERS ─────────────────────────────────
+async function getSession() {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+    method: "POST",
+    headers: { ...HEADERS },
+  });
+  return null; // handled via localStorage below
+}
+
+function saveSession(session) {
+  if (session) localStorage.setItem("sb_session", JSON.stringify(session));
+  else localStorage.removeItem("sb_session");
+}
+
+function loadSession() {
+  try { return JSON.parse(localStorage.getItem("sb_session")); }
+  catch { return null; }
+}
+
+async function signIn(email, password) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    method: "POST",
+    headers: { ...HEADERS },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error_description || data.msg || "Login failed");
+  return data;
+}
+
+async function signOut(token) {
+  await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+    method: "POST",
+    headers: { ...HEADERS, "Authorization": `Bearer ${token}` }
+  });
+}
+
 const VI_SEED = [
   { text:"Waterfront — ocean frontage, Saanich Peninsula", category:"Site & Location", priority:"Must Have", source:"Existing", status:"Under Discussion", notes:"Primary driver of the BC move" },
   { text:"Deep Cove / North Saanich neighbourhood", category:"Site & Location", priority:"Must Have", source:"Existing", status:"Under Discussion", notes:"R-2 zoning, low density, quiet marine community" },
@@ -331,6 +368,11 @@ const IS = { background:"#f8f6f0", border:"1px solid #c0b898", borderRadius:"3px
 const IB = { background:"none", border:"none", cursor:"pointer", fontSize:"15px", color:"#6a8a6a", padding:"1px 3px", lineHeight:1 };
 
 export default function WeenTeam() {
+  const [session, setSession] = useState(loadSession());
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState(null);
+  const [loginLoading, setLoginLoading] = useState(false);
   const [screen, setScreen] = useState("home");
   const [items, setItems] = useState([]);
   const [groceries, setGroceries] = useState([]);
@@ -537,6 +579,54 @@ export default function WeenTeam() {
   const grouped = currentCategories.map(cat=>({ cat, items:filtered.filter(i=>i.category===cat) })).filter(g=>g.items.length>0);
   const counts = { "Must Have":items.filter(i=>i.priority==="Must Have").length, "Want":items.filter(i=>i.priority==="Want").length, "Nice to Have":items.filter(i=>i.priority==="Nice to Have").length };
 
+  async function handleLogin(e) {
+    e.preventDefault();
+    setLoginLoading(true); setLoginError(null);
+    try {
+      const data = await signIn(loginEmail, loginPassword);
+      saveSession(data);
+      setSession(data);
+    } catch(err) {
+      setLoginError(err.message);
+    }
+    setLoginLoading(false);
+  }
+
+  async function handleSignOut() {
+    if (session?.access_token) await signOut(session.access_token);
+    saveSession(null);
+    setSession(null);
+    setScreen("home");
+  }
+
+  // ── LOGIN SCREEN ──────────────────────────────────────────
+  if (!session) return (
+    <div style={{ fontFamily:"'Georgia','Times New Roman',serif", background:"#0f1a0f", minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"40px 20px" }}>
+      <div style={{ fontSize:"10px", letterSpacing:"4px", textTransform:"uppercase", color:"#4a7c4a", marginBottom:"8px" }}>Team Ween</div>
+      <div style={{ fontSize:"32px", fontWeight:"bold", color:"#d4c9a0", letterSpacing:"1px", marginBottom:"4px" }}>WeenTeam Dashboard</div>
+      <div style={{ fontSize:"13px", color:"#5a7a5a", marginBottom:"40px" }}>Private Planning Dashboard</div>
+      <div style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"8px", padding:"28px 32px", width:"100%", maxWidth:"320px" }}>
+        <div style={{ fontSize:"11px", letterSpacing:"2px", textTransform:"uppercase", color:"#5a7a5a", marginBottom:"20px", textAlign:"center" }}>Sign In</div>
+        {loginError && <div style={{ background:"#5a1a1a", color:"#ffaaaa", padding:"8px 12px", borderRadius:"4px", fontSize:"12px", marginBottom:"14px" }}>{loginError}</div>}
+        <form onSubmit={handleLogin}>
+          <input
+            type="email" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)}
+            placeholder="Email" required autoFocus
+            style={{ width:"100%", background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.15)", borderRadius:"4px", padding:"10px 12px", fontSize:"13px", color:"#d4c9a0", fontFamily:"Georgia,serif", marginBottom:"10px", boxSizing:"border-box" }} />
+          <input
+            type="password" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)}
+            placeholder="Password" required
+            style={{ width:"100%", background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.15)", borderRadius:"4px", padding:"10px 12px", fontSize:"13px", color:"#d4c9a0", fontFamily:"Georgia,serif", marginBottom:"18px", boxSizing:"border-box" }} />
+          <button type="submit" disabled={loginLoading}
+            style={{ width:"100%", background:"#2d5a2d", border:"none", borderRadius:"4px", padding:"11px", fontSize:"12px", letterSpacing:"1px", textTransform:"uppercase", color:"#d4c9a0", cursor:"pointer", fontFamily:"Georgia,serif" }}>
+            {loginLoading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+      </div>
+      <div style={{ marginTop:"32px", fontSize:"11px", color:"#3a5a3a", letterSpacing:"1px" }}>WEENTEAM · {new Date().getFullYear()}</div>
+    </div>
+  );
+
   // ── HOME ──────────────────────────────────────────────────
   if (screen==="home") return (
     <div style={{ fontFamily:"'Georgia','Times New Roman',serif", background:"#0f1a0f", minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"40px 20px" }}>
@@ -549,6 +639,7 @@ export default function WeenTeam() {
         <DashCard icon="🛒" title="Groceries" subtitle="Shared running list" onClick={()=>setScreen("groceries")} accent="#9c7a4a" />
       </div>
       <div style={{ marginTop:"40px", fontSize:"11px", color:"#3a5a3a", letterSpacing:"1px" }}>WEENTEAM · {new Date().getFullYear()}</div>
+      <button onClick={handleSignOut} style={{ marginTop:"16px", background:"none", border:"none", color:"#3a5a3a", fontSize:"10px", letterSpacing:"1px", cursor:"pointer", textTransform:"uppercase", fontFamily:"Georgia,serif" }}>Sign Out</button>
     </div>
   );
 
